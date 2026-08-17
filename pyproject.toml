@@ -4,10 +4,20 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "m-taqii", email = "busy.digital.master@gmail.com" }
+    { name = "m-taqii" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "fastapi[standard]>=0.141.1",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.15.0",
+    "sqlalchemy>=2.0.52",
+    "strands-agents>=1.52.0",
+    "uvicorn>=0.52.3",
+]
+
+[tool.uv]
+package = false
 
 [project.scripts]
 marshal = "marshal:main"
