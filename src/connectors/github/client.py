@@ -1,5 +1,5 @@
 import httpx
-from lib.config import get_settings
+from src.lib.config import get_settings
 
 GITHUB_API = "https://api.github.com"
 
@@ -17,6 +17,11 @@ class GithubClient:
 
     async def close(self):
         await self.client.aclose()
+
+    async def get_authenticated_user(self):
+        res = await self.client.get("/user")
+        res.raise_for_status()
+        return res.json()
 
     async def get_pr_diff(self, owner: str, repo: str, pr_number: int):
         res = await self.client.get(f"/repos/{owner}/{repo}/pulls/{pr_number}/files")
@@ -47,6 +52,47 @@ class GithubClient:
         res = await self.client.post(
             f"/repos/{owner}/{repo}/issues/{issue_number}/assignees",
             json={"assignees": [assignee]},
+        )
+        res.raise_for_status()
+        return res.json()
+
+    async def unassign_issue(self, owner: str, repo: str, issue_number: int, assignee: str):
+        # httpx.delete doesn't accept json natively in this version, so we use request()
+        res = await self.client.request(
+            "DELETE",
+            f"/repos/{owner}/{repo}/issues/{issue_number}/assignees",
+            json={"assignees": [assignee]},
+        )
+        res.raise_for_status()
+        return res.json()
+
+    async def add_label(self, owner: str, repo: str, issue_number: int, label: str):
+        res = await self.client.post(
+            f"/repos/{owner}/{repo}/issues/{issue_number}/labels",
+            json={"labels": [label]},
+        )
+        res.raise_for_status()
+        return res.json()
+
+    async def remove_label(self, owner: str, repo: str, issue_number: int, label: str):
+        res = await self.client.delete(
+            f"/repos/{owner}/{repo}/issues/{issue_number}/labels/{label}"
+        )
+        res.raise_for_status()
+        return res.json()
+
+    async def close_issue(self, owner: str, repo: str, issue_number: int):
+        res = await self.client.patch(
+            f"/repos/{owner}/{repo}/issues/{issue_number}",
+            json={"state": "closed"},
+        )
+        res.raise_for_status()
+        return res.json()
+
+    async def reopen_issue(self, owner: str, repo: str, issue_number: int):
+        res = await self.client.patch(
+            f"/repos/{owner}/{repo}/issues/{issue_number}",
+            json={"state": "open"},
         )
         res.raise_for_status()
         return res.json()
