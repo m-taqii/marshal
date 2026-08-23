@@ -31,6 +31,15 @@ engine = create_async_engine(
 
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
+async def init_db():
+    """Create all tables in the database."""
+    async with engine.begin() as conn:
+        await conn.run_sync(BaseModel.metadata.create_all)
+
+async def close_db():
+    """Dispose of the connection pool."""
+    await engine.dispose()
+
 async def get_db():
     async with SessionLocal() as db:
         yield db
