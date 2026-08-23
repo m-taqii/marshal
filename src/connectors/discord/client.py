@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from src.lib.config import get_settings
-from src.lib.admincheck import is_admin
+from src.repositories.admincheck import is_admin
 
 settings = get_settings()
 
@@ -171,6 +171,7 @@ class DiscordClient(commands.Bot):
                 is_user_admin = True
             else:
                 async with self.db() as session:
+                    from src.repositories.admincheck import is_admin
                     is_user_admin = await is_admin(message.author.id, session)
             
             agent_system_prompt = (
