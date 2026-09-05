@@ -12,12 +12,11 @@ class Settings(BaseSettings):
     app_env: str = "development"  # development | production
     log_level: str = "INFO"
 
-    database_url: str
+    database_url: str = "sqlite:///./app.db"
 
-    aws_region: str = "us-east-1"
-    aws_access_key_id: Optional[str] = None
-    aws_secret_access_key: Optional[str] = None
     llm_api_key: Optional[str] = None
+    llm_base_url: Optional[str] = None
+    llm_model_id: Optional[str] = None
 
     # GitHub
     github_token: str
